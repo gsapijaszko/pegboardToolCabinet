@@ -124,8 +124,8 @@ longDividerOffset = 17.25*inch;
 module bottomA() {
   difference() {
     cube([bottomW, bottomD, bottomH], center = false);  
-    translate([-2*plyH/3, -eps, -eps]) slotPlyH();
-    translate([bottomW-plyH/3, -eps, -eps]) slotPlyH();
+    translate([-2*plyH/3, -eps, -eps]) slotPlyH(slotH=2*plyH/3+eps);
+    translate([bottomW-plyH/3, -eps, -eps]) slotPlyH(slotH=2*plyH/3+eps);
     translate([longDividerOffset, -eps, plyH-plyH/3]) slotPlyH();
     translate([bottomW-longDividerOffset-plyH, -eps, plyH-plyH/3]) slotPlyH();
     translate([(bottomW-plyH)/2, -eps, plyH-plyH/3]) slotPlyH();
@@ -140,30 +140,51 @@ module centerDividerD() {
 
 // projection(cut=false) rotate([0,90,0]) centerDividerD();
 
+
+
 longDividerW = 38.25*inch;
 longDividerD = 8.5*inch;
+longDividerH = plyH;
+
+// holesForShelfPins use to create holes in longDividerB and sideG
+row2rowDistance = longDividerD - (1.5+1.75) * inch;
+hole2holeUp = 2 * inch;
+module holesForShelfPins() {
+  holeBitDia = 6;
+  holeDepth = 1/2 * inch;
+
+  for (i = [0:1]) {
+    for (j = [0:8]) {
+      translate([j*hole2holeUp, i*row2rowDistance, -holeDepth+eps]) cylinder(d=holeBitDia, h=holeDepth+eps, center=false);
+    }
+  }
+}
+
 
 module longDividerB() {
-  color("red") rotate([0,90,0]) translate([-longDividerW,0,0])
+ color("red") rotate([0,90,0]) translate([-longDividerW,0,0])
   difference() {
-    cube([longDividerW, longDividerD, plyH], center = false);
+    cube([longDividerW, longDividerD, longDividerH], center = false);
     translate([longDividerW-5.75*inch-plyH, -eps, 2*plyH/3])slotPlyH();
     translate([longDividerW-5.75*inch-plyH, -eps, -eps])slotPlyH();
     translate([-eps, longDividerD-3/4*inch-plyH/3, 2*plyH/3])
       cube([longDividerW+2*eps, plyH/3, plyH/3+eps], center = false);
     translate([-eps, longDividerD-3/4*inch-plyH/3, -eps])
       cube([longDividerW+2*eps, plyH/3, plyH/3+eps], center = false);
+    translate([longDividerW-5.75*inch-plyH-8*inch,row2rowDistance+1.5*inch, longDividerH]) rotate([0,0,180]) holesForShelfPins();
   }
 }
 
-//projection(cut=true) translate([0,0,plyH/3-eps]) rotate([0,90,0]) longDividerB();
+// projection(cut=true) translate([longDividerW,0,-plyH+eps]) rotate([0,-90,0]) longDividerB();
+
+centerShelfW = bottomW - 2*(longDividerOffset+plyH)+2*plyH/3;
+centerShelfD = bottomD;
+centerShelfH = plyH;
 
 module centerShelfC() {
-  centerShelfW = bottomW - 2*(longDividerOffset+plyH)+2*plyH/3;
-  centerShelfD = bottomD;
   color("pink") 
   difference() {
-    cube([centerShelfW,centerShelfD,plyH], center=false);
+    cube([centerShelfW,centerShelfD,centerShelfH], center=false);
     translate([(centerShelfW-plyH)/2, -eps, -eps]) slotPlyH();
     translate([-eps, centerShelfD-3/4*inch-plyH/3, 2*plyH/3]) cube([centerShelfW+2*eps, plyH/3, plyH/3+eps], center=false);
     translate([-eps, centerShelfD-3/4*inch-plyH/3, -eps]) cube([centerShelfW+2*eps, plyH/3, plyH/3+eps], center=false);
@@ -189,29 +210,35 @@ module topA() {
 
 // projection(cut=true)rotate([180,0,0]) topA();
 
-sideW = 39.25 * inch;
-sideD = bottomD;
+
 sideH = plyH;
+sideW = longDividerW + 2*2*sideH/3;
+sideD = bottomD;
+echo("2 pcs of sides, dim:", sideW,"x",sideD,"x",sideH);
 module sideG() {
   difference() {
     cube([sideW, sideD, sideH], center = false);
-    translate([-eps,sideD-3/4*inch-plyH/3,sideH-plyH/3]) cube([sideW+2*eps, plyH/3, plyH/3+eps], center = false);
+    translate([2*sideH/3,sideD-3/4*inch-plyH/3,sideH-plyH/3]) cube([sideW-4*sideH/3, plyH/3, plyH/3+eps], center = false);
     translate([sideW-topH,-eps, 2/3*sideH]) cube([topH/3, sideD+2*eps,sideH/3+eps]);
     translate([2*bottomH/3,-eps, 2/3*sideH]) cube([bottomH/3, sideD+2*eps,sideH/3+eps]);
     translate([(5.75+1/2)*inch, -eps, 2/3*sideH]) cube([plyH, sideD+2*eps, sideH/3+eps], center=false); //fixedshelf
+    translate([2*bottomH/3+5.75*inch+centerShelfH+8*inch,1.5*inch,sideH]) holesForShelfPins();
   }
 }
 
-sideG() ;
+
+//sideG();
 
 // assembly
-/*
+
 bottomA();
 translate([(bottomW-plyH)/2, 0, 2*plyH/3]) centerDividerD();
-translate([longDividerOffset,0,2*plyH/3]) longDividerB();
+translate([longDividerOffset+longDividerH,0,2*plyH/3]) mirror([1,0,0]) longDividerB();
 translate([bottomW-longDividerOffset-plyH,0,2*plyH/3]) longDividerB();
 translate([longDividerOffset+2*plyH/3, 0, 5.75*inch+2*plyH/3])centerShelfC();
 
 translate([0,0,longDividerW+plyH/3])topA();
-*/
+translate([bottomW+2*sideH/3, 0, 0]) rotate([0,-90,0]) color("orange") sideG();
+translate([-2*sideH/3,0,0]) mirror([1,0,0]) rotate([0,-90,0]) color("orange") sideG();
+
 //drawerFor8mmBits();
