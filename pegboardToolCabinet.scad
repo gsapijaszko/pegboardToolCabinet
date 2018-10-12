@@ -107,10 +107,6 @@ module drawerForBitHolders() {
 //drawerForBitHolders();
 */
 
-drawerForBitsWithPockets();
-translate([0, drawerD+inch, 0]) drawerForBits();
-translate([0, -drawerD-inch, 0]) drawerForBitHolders();
-
 // the case
 
 bottomW = 70.75 * inch;
@@ -136,9 +132,13 @@ module bottomA() {
   }
 }
 
+// bottomA();
+
 module centerDividerD() {
   color("gray") cube([plyH, 7.5*inch, 6*inch], center=false); 
 }
+
+// projection(cut=false) rotate([0,90,0]) centerDividerD();
 
 longDividerW = 38.25*inch;
 longDividerD = 8.5*inch;
@@ -156,6 +156,7 @@ module longDividerB() {
   }
 }
 
+//projection(cut=true) translate([0,0,plyH/3-eps]) rotate([0,90,0]) longDividerB();
 
 module centerShelfC() {
   centerShelfW = bottomW - 2*(longDividerOffset+plyH)+2*plyH/3;
@@ -170,11 +171,12 @@ module centerShelfC() {
   }
 }
 
+//centerShelfC();
+topW = bottomW;
+topD = bottomD;
+topH = plyH;
 
 module topA() {
-  topW = bottomW;
-  topD = bottomD;
-  topH = plyH;
   difference(){
     cube([topW, topD, topH], center = false);
     translate([-2*plyH/3,-eps,plyH/3]) slotPlyH(slotH=2*plyH/3+eps);
@@ -185,9 +187,25 @@ module topA() {
   }
 }
 
+// projection(cut=true)rotate([180,0,0]) topA();
 
-/*
+sideW = 39.25 * inch;
+sideD = bottomD;
+sideH = plyH;
+module sideG() {
+  difference() {
+    cube([sideW, sideD, sideH], center = false);
+    translate([-eps,sideD-3/4*inch-plyH/3,sideH-plyH/3]) cube([sideW+2*eps, plyH/3, plyH/3+eps], center = false);
+    translate([sideW-topH,-eps, 2/3*sideH]) cube([topH/3, sideD+2*eps,sideH/3+eps]);
+    translate([2*bottomH/3,-eps, 2/3*sideH]) cube([bottomH/3, sideD+2*eps,sideH/3+eps]);
+    translate([(5.75+1/2)*inch, -eps, 2/3*sideH]) cube([plyH, sideD+2*eps, sideH/3+eps], center=false); //fixedshelf
+  }
+}
+
+sideG() ;
+
 // assembly
+/*
 bottomA();
 translate([(bottomW-plyH)/2, 0, 2*plyH/3]) centerDividerD();
 translate([longDividerOffset,0,2*plyH/3]) longDividerB();
@@ -195,6 +213,5 @@ translate([bottomW-longDividerOffset-plyH,0,2*plyH/3]) longDividerB();
 translate([longDividerOffset+2*plyH/3, 0, 5.75*inch+2*plyH/3])centerShelfC();
 
 translate([0,0,longDividerW+plyH/3])topA();
-
-//drawerFor8mmBits();
 */
+//drawerFor8mmBits();
