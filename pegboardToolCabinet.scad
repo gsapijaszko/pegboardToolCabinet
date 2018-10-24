@@ -250,8 +250,34 @@ module fixedShelfH() {
   cube([fixedShelfH_W, 7.5*inch, fixedShelfH_H], center=false);
 }
 
-// assembly
+module pegboardPanelE() {
+  pegboardPanelE_H = longDividerW - 5.75*inch - 2/3*centerShelfH;
+  pegboardPanelE_W = centerShelfW;
+  pegboardPanelE_D = pegboardH;
+  
+  holes_X = floor(pegboardPanelE_W/inch) - 2;
+  holes_Y = floor(pegboardPanelE_H/inch) - 2;
 
+  difference() {
+    cube([pegboardPanelE_W, pegboardPanelE_H, pegboardPanelE_D], center = false);
+    for(i = [0:holes_X]) {
+      for(j = [0:holes_Y]) {
+        translate([(pegboardPanelE_W-holes_X*inch)/2+i*inch,(pegboardPanelE_H-holes_Y*inch)/2+j*inch,-eps]) cylinder(d=1/4*inch, h=pegboardH+2*eps, center = false);
+      }
+    }
+  }
+}
+
+module cabinetBackJ() {
+  cabinetBack_W = fixedShelfH_W;
+  cabinetBack_H = longDividerW;
+  cabinetBack_D = pegboardH;
+  cube([cabinetBack_W, cabinetBack_H, cabinetBack_D], center = false);
+  echo("2 pcs of cabinetBacks J, size:", cabinetBack_W, "x",cabinetBack_H, "made of", cabinetBack_D, " mm plywood");
+}
+
+
+// assembly
 bottomA();
 translate([(bottomW-plyH)/2, 0, 2*plyH/3]) centerDividerD();
 translate([longDividerOffset+longDividerH,0,2*plyH/3]) mirror([1,0,0]) longDividerB();
@@ -264,6 +290,10 @@ translate([-2*sideG_H/3,0,0]) mirror([1,0,0]) rotate([0,-90,0]) color("orange") 
 
 color("brown")translate([0, 0, 5.75*inch+2*plyH/3])fixedShelfH();
 color("brown")translate([bottomW-fixedShelfH_W, 0, 5.75*inch+2*plyH/3])fixedShelfH();
+
+translate([longDividerOffset+2*longDividerH/3,centerShelfD-3/4*inch,2*plyH/3+5.75*inch+2/3*centerShelfH])rotate([90,0,0]) pegboardPanelE();
+
+translate([0,centerShelfD-3/4*inch,2/3*bottomH])rotate([90,0,0])color("green")cabinetBackJ();
 
 //drawerFor8mmBits();
 
